@@ -21,7 +21,17 @@ static int parse_reply_access(char *reply, char **token, char **secret)
     char **rv = NULL; /* url parameters */
     rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
-    if(rc == 3)
+    if (rc == 2 || rc == 4) {
+        if (!strncmp(rv[0], "oauth_token=", 11) &&
+                !strncmp(rv[1], "oauth_token_secret=", 18)) {
+            if (token)
+                *token = strdup(&(rv[0][12]));
+            if (secret)
+                *secret = strdup(&(rv[1][19]));
+
+            retval = 0;
+        }
+    } else if (rc == 3)
         if(!strncmp(rv[1], "oauth_token=", 11) &&
                 !strncmp(rv[2], "oauth_token_secret=", 18)) {
             if(token)
@@ -68,15 +78,15 @@ void request_token()
     sprintf(ath_uri, "%s?oauth_verifier=%d", access_token, verifier);
 
     req_url = oauth_sign_url2(ath_uri, NULL, OA_HMAC, NULL, consumer_key,
-                                consumer_secret, req_key, req_secret);
+            consumer_secret, req_key, req_secret);
 
     printf("%s\n", req_url);
     new_reply = oauth_http_get(req_url, NULL);
     printf("%s\n", new_reply);
 
-        
 
-    if(parse_reply_access(new_reply, &req_key, &req_secret))
+
+    if(parse_reply_access(new_reply, &access_key, &access_secret))
         printf("Something is wrong!\n");
 
     fprintf(stdout, "We have access to twitter! I can't believe it!"
@@ -98,9 +108,7 @@ static void send_tweet()
 
     printf("%s\n", endpoint);
     req_url = oauth_sign_url2(endpoint, &postarg, OA_HMAC, NULL,
-                                consumer_key, consumer_secret,
-                                "12993012-N5cqt3dRS6OShUTP0k6pfPH02X6e8UJ74ISiAk",
-                                "ozeUp6ei9m4WlwmvB5tmPDeMBYbPk1BIjGXlO0iw");
+            consumer_key, consumer_secret, access_key, access_secret);
     reply = oauth_http_post(req_url, postarg);
     printf("%s\n", postarg);
     printf("%s\n", reply);
@@ -109,7 +117,7 @@ static void send_tweet()
 int main(int argc, char *argv[])
 {
 
-//    request_token();  
+    request_token();  
     send_tweet();
     return 0;
 }
