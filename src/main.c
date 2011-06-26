@@ -8,7 +8,7 @@ const char consumer_secret[] = "e9xprZdGKksRiQtVcSrsS9RnlOZenBGkptUApmjxs";
 const char request_token_uri[] = "https://api.twitter.com/oauth/request_token";
 const char access_token[] = "https://api.twitter.com/oauth/access_token";
 const char twitter_authorize_uri[] = "http://api.twitter.com/oauth/authorize?oauth_token=";
-const char tweet[] =  "Primer tweet desde mi propia aplicación espero no el último";
+const char tweet[] =  "que calor!!! La aplicación de mi hermano esta chida";
 
 char *access_key = NULL;
 char *access_secret = NULL;

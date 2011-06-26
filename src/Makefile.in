@@ -1,0 +1,42 @@
+# @configure_input@
+
+#Package specific subitution variables
+package 	= @PACKAGE_NAME@
+version 	= @PACKAGE_VERSION@
+tarname 	= @PACKAGE_TARNAME@
+distdir 	= $(tarname)-$(version)
+
+# Prefix-specific substitution variables
+prefix		= @prefix@
+exec_prefix = @exec_prefix@
+bindir		= @bindir@
+
+# Tool-specific subitution variables
+CFLAGS ?= -g -O0
+CFLAGS = -Wall -g
+LDFLAGS = -loauth
+
+all: vitweet
+
+vitweet: main.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -I. -I$(srcdir) -I.. -o $@ main.c $(LDFLAGS)
+
+clean:
+	-rm vitweet >/dev/null 2>&1
+
+
+install:
+	install -d $(DESTDIR)$(bindir)
+	install -m 0755 vitweet $(DESTDIR)$(bindir)
+
+uninstall:
+	-rm $(DESTDIR)$(bindir)/vitweet >/dev/null 2>&1
+
+Makefile: Makefile.in ../config.status
+	cd .. && ./config.status src/$@
+
+../config.status: ../configure
+	cd .. && ./config.status --recheck
+
+
+.PHONY: all clean check install unistall
