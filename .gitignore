@@ -1,3 +1,8 @@
+compile
+configure
+depcomp
+install-sh
+missing
 *~
 src/keys
 *.swp
