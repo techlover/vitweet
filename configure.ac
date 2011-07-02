@@ -23,9 +23,11 @@ if test "$PKG_CONFIG" = "no" ; then
 fi
 
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0,
-   CFLAGS="$CFLAGS $GTK_CFLAGS"
-   LIBS="$LIBS $GTK_LIBS",)
+PKG_CHECK_MODULES(GTK, gtk+-2.0)
+
+PKG_CHECK_MODULES([GLIB], [glib-2.0])
+
+PKG_CHECK_MODULES([XML], [libxml-2.0])
 
 AC_SEARCH_LIBS([oauth_sign_url2], [oauth])
 

@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include "libmicro.h"
+#include "tweet-input.h"
 #include "tweet-box.h"
 
 static void destroy (GtkWidget*,gpointer);
@@ -12,14 +13,19 @@ char consu_secret[] = "e9xprZdGKksRiQtVcSrsS9RnlOZenBGkptUApmjxs";
 char *key = NULL;
 char *secret = NULL;
 
+TweetInput *tweet_input;
+TweetBox *tweet_box[20];
+
+
 int main(int argc, char *argv[])
 {
     gtk_init(&argc, &argv);
+    micro_init();
     read_keys(&key, &secret);
     set_consumer_keys(consu, consu_secret);
     set_access_keys(key, secret);
-    GtkWidget *window;
-    TweetBox *tweet_box = create_tweet_box();
+    GtkWidget *window, *vbox;
+    tweet_input = create_tweet_input();
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW (window), "Vitweet");
@@ -28,7 +34,27 @@ int main(int argc, char *argv[])
     g_signal_connect (G_OBJECT (window), "destroy",
             G_CALLBACK (destroy), NULL);
 
-    gtk_container_add (GTK_CONTAINER (window), tweet_box->vbox);
+    vbox = gtk_vbox_new(FALSE, 5);
+
+    gtk_box_pack_start(GTK_BOX(vbox), tweet_input->vbox, TRUE, TRUE, 2);
+    //gtk_container_add (GTK_CONTAINER (window), tweet_input->vbox);
+    
+    int i;
+    GList *list = NULL;
+    list = get_home_timeline();
+    Tweet *tweet;
+    tweet = g_slice_new(Tweet);
+    for(i = 0; i<g_list_length(list); i++){
+        tweet = (Tweet *)g_list_nth_data (list, i);
+        tweet_box[i] = create_tweet_box(tweet->text);
+        gtk_box_pack_start(GTK_BOX(vbox), tweet_box[i]->vbox, TRUE, TRUE, 2);
+    }
+
+
+
+
+
+    gtk_container_add (GTK_CONTAINER (window), vbox);
 
     gtk_widget_set_size_request (window, 420, 150);
 
@@ -62,5 +88,6 @@ static void read_keys(char **key, char **secret)
 
 static void destroy(GtkWidget *window, gpointer data)
 {
+    g_slice_free(TweetInput, tweet_input);
     gtk_main_quit();
 }

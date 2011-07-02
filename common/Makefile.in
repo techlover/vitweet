@@ -47,7 +47,7 @@ AR = ar
 ARFLAGS = cru
 libmicro_a_AR = $(AR) $(ARFLAGS)
 libmicro_a_LIBADD =
-am_libmicro_a_OBJECTS = libmicro.$(OBJEXT)
+am_libmicro_a_OBJECTS = libmicro_a-libmicro.$(OBJEXT)
 libmicro_a_OBJECTS = $(am_libmicro_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -81,6 +81,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GLIB_CFLAGS = @GLIB_CFLAGS@
+GLIB_LIBS = @GLIB_LIBS@
 GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -112,6 +114,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -156,6 +160,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libmicro.a
 libmicro_a_SOURCES = libmicro.h libmicro.c
+libmicro_a_CFLAGS = \
+					 $(GLIB_CFLAGS) \
+					 $(LIBOAUTH_CFLAGS) \
+					 $(XML_CFLAGS) 
+
 all: all-am
 
 .SUFFIXES:
@@ -204,7 +213,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmicro.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmicro_a-libmicro.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -219,6 +228,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+libmicro_a-libmicro.o: libmicro.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmicro_a_CFLAGS) $(CFLAGS) -MT libmicro_a-libmicro.o -MD -MP -MF $(DEPDIR)/libmicro_a-libmicro.Tpo -c -o libmicro_a-libmicro.o `test -f 'libmicro.c' || echo '$(srcdir)/'`libmicro.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmicro_a-libmicro.Tpo $(DEPDIR)/libmicro_a-libmicro.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libmicro.c' object='libmicro_a-libmicro.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmicro_a_CFLAGS) $(CFLAGS) -c -o libmicro_a-libmicro.o `test -f 'libmicro.c' || echo '$(srcdir)/'`libmicro.c
+
+libmicro_a-libmicro.obj: libmicro.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmicro_a_CFLAGS) $(CFLAGS) -MT libmicro_a-libmicro.obj -MD -MP -MF $(DEPDIR)/libmicro_a-libmicro.Tpo -c -o libmicro_a-libmicro.obj `if test -f 'libmicro.c'; then $(CYGPATH_W) 'libmicro.c'; else $(CYGPATH_W) '$(srcdir)/libmicro.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmicro_a-libmicro.Tpo $(DEPDIR)/libmicro_a-libmicro.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libmicro.c' object='libmicro_a-libmicro.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmicro_a_CFLAGS) $(CFLAGS) -c -o libmicro_a-libmicro.obj `if test -f 'libmicro.c'; then $(CYGPATH_W) 'libmicro.c'; else $(CYGPATH_W) '$(srcdir)/libmicro.c'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

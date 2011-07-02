@@ -2,15 +2,47 @@
 #include <string.h>
 #include <stdlib.h>
 #include <oauth.h>
+#include <glib.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include "libmicro.h"
 
+const char twitter_statuses[] = "http://api.twitter.com/1/statuses";
 const char request_token_uri[] = "https://api.twitter.com/oauth/request_token";
 const char access_token[] = "https://api.twitter.com/oauth/access_token";
 const char twitter_authorize_uri[] = "http://api.twitter.com/oauth/authorize?oauth_token=";
+
 char *consumer_key = NULL;
 char *consumer_secret = NULL;
 char *access_key = NULL;
 char *access_secret = NULL;
+Session *request;
+GList *tweet_list;
+
+static void request_free(Session *request)
+{
+    if(!request)
+        return;
+    free(request);
+}
+
+void micro_init()
+{
+    request = calloc(1, sizeof(Session));
+}
+
+void set_consumer_keys(char *consumer, char *secret)
+{
+    consumer_key = consumer;
+    consumer_secret = secret;
+}
+
+void set_access_keys(char *key, char *secret)
+{
+    access_key = key;
+    access_secret = secret;
+}
 
 int parse_reply_access(char *reply, char **token, char **secret)
 {
@@ -92,39 +124,160 @@ void request_token()
 }
 
 
-
-void set_consumer_keys(char *consumer, char *secret)
+static Tweet *parse_statuses(Session *session,
+        xmlDocPtr doc, xmlNodePtr current)
 {
-    consumer_key = consumer;
-    consumer_secret = secret;
+    xmlChar *text = NULL;
+    xmlChar *screen_name = NULL;
+    xmlChar *created_at = NULL;
+    xmlChar *id = NULL;
+    xmlNodePtr userinfo;
+    Tweet *tweet = g_slice_new(Tweet);
+    tweet->text = NULL;
+    tweet->screen_name = NULL;
+    tweet->id = NULL;
+    tweet->created_at = NULL;
+
+    current = current->xmlChildrenNode;
+    while (current != NULL) {
+        if (current->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(current->name, (const xmlChar *)"created_at"))
+                created_at = xmlNodeListGetString(doc, current->xmlChildrenNode, 1);
+            if (!xmlStrcmp(current->name, (const xmlChar *)"text"))
+                text = xmlNodeListGetString(doc, current->xmlChildrenNode, 1);
+            if (!xmlStrcmp(current->name, (const xmlChar *)"id"))
+                id = xmlNodeListGetString(doc, current->xmlChildrenNode, 1);
+            if (!xmlStrcmp(current->name, (const xmlChar *)"user")) {
+                userinfo = current->xmlChildrenNode;
+                while (userinfo != NULL) {
+                    if ((!xmlStrcmp(userinfo->name, (const xmlChar *)"screen_name"))) {
+                        if (screen_name)
+                            xmlFree(screen_name);
+                        screen_name = xmlNodeListGetString(doc, userinfo->xmlChildrenNode, 1);
+                    }
+                    userinfo = userinfo->next;
+                }
+            }
+
+            if (screen_name && text && created_at && id) {
+                tweet->screen_name = screen_name;
+                tweet->text = text;
+                tweet->created_at = created_at;
+                tweet->id = id;
+                
+
+            }
+        }
+        current = current->next;
+    }
+
+    return tweet;
 }
 
-void set_access_keys(char *key, char *secret)
+static void parse_timeline(char *document, Session *session)
 {
-    access_key = key;
-    access_secret = secret;
+    xmlDocPtr doc;
+    xmlNodePtr current;
+    tweet_list = NULL;
+    Tweet *tweet = g_slice_new(Tweet);
+    tweet->text = NULL;
+
+    doc = xmlReadMemory(document, strlen(document), "timeline.xml",
+            NULL, XML_PARSE_NOERROR);
+    if (doc == NULL)
+        return;
+
+    current = xmlDocGetRootElement(doc);
+    if (current == NULL) {
+        fprintf(stderr, "empty document\n");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+    if (xmlStrcmp(current->name, (const xmlChar *) "statuses")) {
+        fprintf(stderr, "unexpected document type\n");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+    current = current->xmlChildrenNode;
+    while (current != NULL) {
+        if ((!xmlStrcmp(current->name, (const xmlChar *)"status"))){
+            tweet_list = g_list_prepend(tweet_list, 
+                    (gpointer*)parse_statuses(session, doc, current));
+            tweet = (Tweet *)g_list_nth_data(tweet_list, 0); 
+        }
+        current = current->next;
+    }
+
+
+
+    xmlFreeDoc(doc);
+
+    return;
 }
 
-void send_tweet(char *tweet)
-{   
+
+static void send_request(Session *request)
+{
+    request->exit_code = 0;
     char *escaped_tweet = NULL;
+    int is_post = 0;
     char endpoint[500];
     char *req_url;
     char *reply;
     char *postarg = NULL;
-    escaped_tweet = oauth_url_escape(tweet);
-    sprintf(endpoint, "%s%s?status=%s","http://api.twitter.com/1/statuses",
-            "/update.xml", escaped_tweet);
+    switch(request->action) {
+        case ACTION_HOME_TIMELINE:
+            sprintf(endpoint, "%s%s","http://api.twitter.com/1/statuses",
+                    "/home_timeline.xml&count=2");
+            break;
+        case ACTION_UPDATE:
+            escaped_tweet = oauth_url_escape(request->tweet);
+            sprintf(endpoint, "%s%s?status=%s","http://api.twitter.com/1/statuses",
+                    "/update.xml", escaped_tweet);
+            is_post = 1;
+            break;
 
-    //printf("%s\n", endpoint);
-    req_url = oauth_sign_url2(endpoint, &postarg, OA_HMAC, NULL,
-            consumer_key, consumer_secret, access_key, access_secret);
-    reply = oauth_http_post(req_url, postarg);
-    //printf("%s\n", postarg);
-    //printf("%s\n", reply);
-    free(reply);
+    }
+    if(is_post){
+        req_url = oauth_sign_url2(endpoint, &postarg, 
+                OA_HMAC, NULL, consumer_key, consumer_secret, access_key, access_secret);
+
+        reply = oauth_http_post(req_url, postarg);
+
+    } else{
+        req_url = oauth_sign_url2(endpoint, NULL, OA_HMAC, NULL,
+                consumer_key, consumer_secret, access_key, access_secret);
+
+        reply = oauth_http_get(req_url, postarg);
+    }
+
+
+    if (request->action != ACTION_UPDATE)
+        parse_timeline(reply, request);
+
+    if(reply)
+        request->exit_code = 1;
+
     free(postarg);
     free(req_url);
-    free(escaped_tweet);
-    
+    free(reply);
+}
+
+
+GList *get_home_timeline()
+{
+    request->action = ACTION_HOME_TIMELINE;
+    send_request(request);
+    return tweet_list;
+
+}
+
+int send_tweet(char *tweet)
+{   
+    request->tweet = tweet;
+    request->action = ACTION_UPDATE;
+    send_request(request);
+    return request->exit_code;
 }
