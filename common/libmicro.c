@@ -17,6 +17,9 @@ char *consumer_key = NULL;
 char *consumer_secret = NULL;
 char *access_key = NULL;
 char *access_secret = NULL;
+// Temporal keys
+char *req_key = NULL;
+char *req_secret = NULL;
 Session *request;
 GList *tweet_list;
 
@@ -44,6 +47,8 @@ void set_access_keys(char *key, char *secret)
     access_secret = secret;
 }
 
+
+
 int parse_reply_access(char *reply, char **token, char **secret)
 {
     int retval = 1;
@@ -53,7 +58,7 @@ int parse_reply_access(char *reply, char **token, char **secret)
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if (rc == 2 || rc == 4) {
         if (!strncmp(rv[0], "oauth_token=", 11) &&
-                    !strncmp(rv[1], "oauth_token_secret=", 18)) {
+                !strncmp(rv[1], "oauth_token_secret=", 18)) {
             if (token)
                 *token = strdup(&(rv[0][12]));
             if (secret)
@@ -76,52 +81,60 @@ int parse_reply_access(char *reply, char **token, char **secret)
     return retval;
 }
 
-void request_token()
+char *micro_get_twitter_authorize_url()
 {
     int verifier;
     char line[100];
-    char *req_key = NULL;
-    char *req_secret = NULL;
+    char *req_url;
+    char *reply;
+    char ath_uri[90];
+    char *new_reply;
+    char *twitter_auth_url;
+
+    req_url = oauth_sign_url2(request_token_uri, NULL, OA_HMAC, NULL,
+            consumer_key, consumer_secret, NULL, NULL);
+    //printf("%s\n", req_url);
+
+    reply = oauth_http_get(req_url, NULL);
+    //printf("%s\n", reply);
+    if(parse_reply_access(reply, &req_key, &req_secret))
+        printf("Something is wrong!\n");
+
+    free(reply);
+
+    //fprintf(stdout, "%s%s\nPIN: ", twitter_authorize_uri, req_key);
+
+    twitter_auth_url = g_strconcat(twitter_authorize_uri, req_key, NULL);
+    //g_print(twitter_auth_url);
+
+    return twitter_auth_url;
+}
+
+
+char *micro_get_access_key_full_reply(char *pin)
+{
+    int verifier;
+    char line[100];
     char *req_url;
     char *reply;
     char ath_uri[90];
     char *new_reply;
 
-    req_url = oauth_sign_url2(request_token_uri, NULL, OA_HMAC, NULL,
-            consumer_key, consumer_secret, NULL, NULL);
-    printf("%s\n", req_url);
 
-    reply = oauth_http_get(req_url, NULL);
-    printf("%s\n", reply);
-    if(parse_reply_access(reply, &req_key, &req_secret))
-        printf("Something is wrong!\n");
-
-    free(reply);
-    fprintf(stdout,
-            "Please open the link on you browser and allow vitweet. Then "
-            "paste the PIN here\n");
-    fprintf(stdout,"%s%s\nPIN: ", twitter_authorize_uri, req_key);
-    fgets(line, sizeof(line), stdin);
-    sscanf(line, "%d", &verifier);
-
-    sprintf(ath_uri, "%s?oauth_verifier=%d", access_token, verifier);
+    sprintf(ath_uri, "%s?oauth_verifier=%s", access_token, pin);
 
     req_url = oauth_sign_url2(ath_uri, NULL, OA_HMAC, NULL, consumer_key,
             consumer_secret, req_key, req_secret);
 
-    printf("%s\n", req_url);
     new_reply = oauth_http_get(req_url, NULL);
-    printf("%s\n", new_reply);
 
+    free(req_key);
+    free(req_secret);
 
-    if(parse_reply_access(new_reply, &access_key, &access_secret))
-        printf("Something is wrong!\n");
-
-    fprintf(stdout, "We have access to twitter! I can't believe it!"
-            "our access token key: %s\n"
-            "our access token secret: %s\n"
-            "\n",req_key, req_secret);
+    return new_reply;
 }
+
+
 
 
 static Tweet *parse_statuses(Session *session,

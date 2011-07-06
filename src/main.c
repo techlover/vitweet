@@ -4,7 +4,7 @@
 #include <gtk/gtk.h>
 #include "libmicro.h"
 #include "tweet-input.h"
-#include "tweet-box.h"
+#include "vitweet-request-key-dialog.h"
 
 static void destroy (GtkWidget*,gpointer);
 static void read_keys(char **, char **);
@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 {
     gtk_init(&argc, &argv);
     micro_init();
-    read_keys(&key, &secret);
     set_consumer_keys(consu, consu_secret);
+    read_keys(&key, &secret);
     set_access_keys(key, secret);
     GtkWidget *window, *treeview, *scrolled_win, *vbox;
     GtkListStore *store;
@@ -104,15 +104,31 @@ int main(int argc, char *argv[])
 static void read_keys(char **key, char **secret)
 {
     gchar *filename, *content;
+    gchar *path;
     gsize bytes;
+
     GError *error = NULL;
 
     filename = g_build_filename (g_get_current_dir(), "keys", NULL);
 
-    if(!g_file_test (filename, G_FILE_TEST_EXISTS))
-        g_error("Error: File does not exist!");
+    content = NULL;
+
+    if(!g_file_test (filename, G_FILE_TEST_EXISTS)) {
+        path = g_build_path ("/", g_get_home_dir(), ".vitweet", NULL);
+        filename = g_build_filename (path, "keys", NULL);
+    }
+    if(!g_file_test (filename, G_FILE_TEST_EXISTS)) {
+        create_request_key_dialog(&content);
+        g_mkdir(path, 0700);
+        if(content)
+            g_file_set_contents(filename, content, strlen(content), &error);
+        else
+            g_error("PIN not entered");
+    }
+
 
     g_file_get_contents(filename, &content, &bytes, &error);
+
     if(parse_reply_access(content, key, secret))
         g_error("Error: Can't read file");
 

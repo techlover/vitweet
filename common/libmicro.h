@@ -21,6 +21,10 @@ typedef struct
 } Tweet;
 
 
+char *micro_get_twitter_authorize_url(void);
+
+char *micro_get_access_key_full_reply(char *);
+
 void set_consumer_keys(char *, char *);
 void set_access_keys(char *, char *);
 void request_token(void);
