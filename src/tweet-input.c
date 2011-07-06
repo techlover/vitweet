@@ -33,15 +33,15 @@ TweetInput *create_tweet_input()
 
     tweet_input->send_and_status_hbox = gtk_hbox_new(TRUE, 3);
     
-    gtk_box_pack_start (GTK_BOX (tweet_input->send_and_status_hbox), tweet_input->num_carac, TRUE, TRUE, 0);
-    gtk_box_pack_start (GTK_BOX (tweet_input->send_and_status_hbox), tweet_input->send_tweet, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (tweet_input->send_and_status_hbox), tweet_input->num_carac, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (tweet_input->send_and_status_hbox), tweet_input->send_tweet, FALSE, FALSE, 0);
 
     tweet_input->send_dm = gtk_button_new_with_label ("Send DM");
 
     tweet_input->bottom_hbox = gtk_hbox_new (FALSE, 220);
 
-    gtk_box_pack_start (GTK_BOX (tweet_input->bottom_hbox), tweet_input->send_dm, TRUE, TRUE, 5);
-    gtk_box_pack_start (GTK_BOX (tweet_input->bottom_hbox), tweet_input->send_and_status_hbox, TRUE, TRUE, 5);
+    gtk_box_pack_start (GTK_BOX (tweet_input->bottom_hbox), tweet_input->send_dm, FALSE, FALSE, 5);
+    gtk_box_pack_start (GTK_BOX (tweet_input->bottom_hbox), tweet_input->send_and_status_hbox, FALSE, FALSE, 5);
 
 
 
@@ -51,7 +51,7 @@ TweetInput *create_tweet_input()
             G_CALLBACK (send_text), (gpointer)tweet_input);
 
     
-    gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->scrolled_win, TRUE, TRUE, 2);
+    gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->scrolled_win, FALSE, FALSE, 2);
     gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->bottom_hbox, FALSE, FALSE, 2);
 
 

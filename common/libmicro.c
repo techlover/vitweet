@@ -129,11 +129,13 @@ static Tweet *parse_statuses(Session *session,
 {
     xmlChar *text = NULL;
     xmlChar *screen_name = NULL;
+    xmlChar *name = NULL;
     xmlChar *created_at = NULL;
     xmlChar *id = NULL;
     xmlNodePtr userinfo;
     Tweet *tweet = g_slice_new(Tweet);
     tweet->text = NULL;
+    tweet->name = NULL;
     tweet->screen_name = NULL;
     tweet->id = NULL;
     tweet->created_at = NULL;
@@ -155,16 +157,21 @@ static Tweet *parse_statuses(Session *session,
                             xmlFree(screen_name);
                         screen_name = xmlNodeListGetString(doc, userinfo->xmlChildrenNode, 1);
                     }
+                    if ((!xmlStrcmp(userinfo->name, (const xmlChar *)"name"))) {
+                        if (name)
+                            xmlFree(name);
+                        name = xmlNodeListGetString(doc, userinfo->xmlChildrenNode, 1);
+                    }
                     userinfo = userinfo->next;
                 }
             }
 
-            if (screen_name && text && created_at && id) {
+            if (screen_name && text && created_at && id && name) {
+                tweet->name = name;
                 tweet->screen_name = screen_name;
                 tweet->text = text;
                 tweet->created_at = created_at;
                 tweet->id = id;
-                
 
             }
         }
@@ -203,7 +210,7 @@ static void parse_timeline(char *document, Session *session)
     current = current->xmlChildrenNode;
     while (current != NULL) {
         if ((!xmlStrcmp(current->name, (const xmlChar *)"status"))){
-            tweet_list = g_list_prepend(tweet_list, 
+            tweet_list = g_list_append(tweet_list, 
                     (gpointer*)parse_statuses(session, doc, current));
             tweet = (Tweet *)g_list_nth_data(tweet_list, 0); 
         }
@@ -230,7 +237,7 @@ static void send_request(Session *request)
     switch(request->action) {
         case ACTION_HOME_TIMELINE:
             sprintf(endpoint, "%s%s","http://api.twitter.com/1/statuses",
-                    "/home_timeline.xml&count=2");
+                    "/home_timeline.xml");
             break;
         case ACTION_UPDATE:
             escaped_tweet = oauth_url_escape(request->tweet);

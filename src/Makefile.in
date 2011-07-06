@@ -46,7 +46,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_vitweet_OBJECTS = vitweet-main.$(OBJEXT) \
-	vitweet-tweet-input.$(OBJEXT) vitweet-tweet-box.$(OBJEXT)
+	vitweet-tweet-input.$(OBJEXT)
 vitweet_OBJECTS = $(am_vitweet_OBJECTS)
 am__DEPENDENCIES_1 =
 vitweet_DEPENDENCIES = ../common/libmicro.a $(am__DEPENDENCIES_1) \
@@ -162,7 +162,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-vitweet_SOURCES = main.c tweet-input.c tweet-box.c
+vitweet_SOURCES = main.c tweet-input.c 
 vitweet_CFLAGS = $(GTK_CFLAGS) 
 vitweet_CPPFLAGS = -I$(top_srcdir)/common
 vitweet_LDADD = \
@@ -253,7 +253,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-tweet-box.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-tweet-input.Po@am__quote@
 
 .c.o:
@@ -297,20 +296,6 @@ vitweet-tweet-input.obj: tweet-input.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='tweet-input.c' object='vitweet-tweet-input.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -c -o vitweet-tweet-input.obj `if test -f 'tweet-input.c'; then $(CYGPATH_W) 'tweet-input.c'; else $(CYGPATH_W) '$(srcdir)/tweet-input.c'; fi`
-
-vitweet-tweet-box.o: tweet-box.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -MT vitweet-tweet-box.o -MD -MP -MF $(DEPDIR)/vitweet-tweet-box.Tpo -c -o vitweet-tweet-box.o `test -f 'tweet-box.c' || echo '$(srcdir)/'`tweet-box.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/vitweet-tweet-box.Tpo $(DEPDIR)/vitweet-tweet-box.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='tweet-box.c' object='vitweet-tweet-box.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -c -o vitweet-tweet-box.o `test -f 'tweet-box.c' || echo '$(srcdir)/'`tweet-box.c
-
-vitweet-tweet-box.obj: tweet-box.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -MT vitweet-tweet-box.obj -MD -MP -MF $(DEPDIR)/vitweet-tweet-box.Tpo -c -o vitweet-tweet-box.obj `if test -f 'tweet-box.c'; then $(CYGPATH_W) 'tweet-box.c'; else $(CYGPATH_W) '$(srcdir)/tweet-box.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/vitweet-tweet-box.Tpo $(DEPDIR)/vitweet-tweet-box.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='tweet-box.c' object='vitweet-tweet-box.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -c -o vitweet-tweet-box.obj `if test -f 'tweet-box.c'; then $(CYGPATH_W) 'tweet-box.c'; else $(CYGPATH_W) '$(srcdir)/tweet-box.c'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
