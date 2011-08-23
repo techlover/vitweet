@@ -3,13 +3,17 @@ vitweet_SOURCES = \
 				  main.c \
 				  tweet-input.c tweet-input.h  \
 				  vitweet-request-key-dialog.c vitweet-request-key-dialog.h
-vitweet_CFLAGS =  $(GTK_CFLAGS) 
+
+vitweet_CFLAGS =  $(GTK_CFLAGS) \
+				  $(WEBKIT_CFLAGS) 
+
 
 vitweet_CPPFLAGS = -I$(top_srcdir)/common 
 vitweet_LDADD = \
 				../common/libmicro.a \
 				$(GTK_LIBS) \
+				$(WEBKIT_LIBS) \
 				$(LIBOAUTH_LIBS) \
-				$(XML_LIBS)
+				$(XML_LIBS) 
 
 

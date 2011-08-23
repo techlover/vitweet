@@ -15,6 +15,7 @@ TweetInput *create_tweet_input()
     gtk_text_view_set_editable(GTK_TEXT_VIEW (tweet_input->tweet_text), TRUE);
     gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tweet_input->tweet_text), GTK_WRAP_WORD);
     
+    gtk_widget_set_size_request(tweet_input->tweet_text, 200, 200);
 
     tweet_input->scrolled_win = gtk_scrolled_window_new(NULL, NULL);
 

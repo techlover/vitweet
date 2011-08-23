@@ -13,6 +13,8 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 AM_PROG_CC_C_O
 
+AM_SILENT_RULES
+
 # Checks for libraries.
  
 if test -z "$PKG_CONFIG"; then
@@ -23,7 +25,9 @@ if test "$PKG_CONFIG" = "no" ; then
 fi
 
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0)
+PKG_CHECK_MODULES([GTK], [gtk+-3.0])
+
+PKG_CHECK_MODULES([WEBKIT], [webkitgtk-3.0])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 

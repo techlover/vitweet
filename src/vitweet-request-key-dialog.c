@@ -5,7 +5,7 @@ void create_request_key_dialog(gchar **keys)
 {
 
     GtkWidget *dialog, *info_request_key, *link, *image, *table;
-    GtkWidget *pin_label, *pin_entry;
+    GtkWidget *pin_label, *pin_entry, *content_area;
     gboolean reply;
     gint result;
 
@@ -50,11 +50,20 @@ void create_request_key_dialog(gchar **keys)
     gtk_table_set_col_spacings (GTK_TABLE (table), 5);
 
     gtk_container_set_border_width (GTK_CONTAINER (table), 5);
-    gtk_box_pack_start(GTK_BOX (GTK_DIALOG (dialog)->vbox), table, FALSE, FALSE, 5);
+
+    content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+    gtk_container_add (GTK_CONTAINER (content_area), table);
+
+    /* Deprecated in GTK3 */
+    //gtk_box_pack_start(GTK_BOX (GTK_DIALOG (dialog)->vbox), table, FALSE, FALSE, 5);
+
+
 
     gtk_widget_set_size_request(dialog, 500, 300);
     gtk_window_set_resizable(GTK_WINDOW(dialog), FALSE);
     gtk_widget_show_all(dialog);
+
     result = gtk_dialog_run(GTK_DIALOG (dialog));
     if(result == GTK_RESPONSE_OK) {
         gchar *pin_text = (gchar *)gtk_entry_get_text (GTK_ENTRY (pin_entry)); 
