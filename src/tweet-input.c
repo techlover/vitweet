@@ -52,7 +52,7 @@ TweetInput *create_tweet_input()
             G_CALLBACK (send_text), (gpointer)tweet_input);
 
     
-    gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->scrolled_win, FALSE, FALSE, 2);
+    gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->scrolled_win, TRUE, TRUE, 2);
     gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->bottom_hbox, FALSE, FALSE, 2);
 
 
