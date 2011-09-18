@@ -6,7 +6,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include "libmicro.h"
+#include "libgsocial.h"
 
 const char twitter_statuses[] = "http://api.twitter.com/1/statuses";
 const char request_token_uri[] = "https://api.twitter.com/oauth/request_token";

@@ -8,9 +8,9 @@ vitweet_CFLAGS =  $(GTK_CFLAGS) \
 				  $(WEBKIT_CFLAGS) 
 
 
-vitweet_CPPFLAGS = -I$(top_srcdir)/common 
+vitweet_CPPFLAGS = -I$(top_srcdir)/include 
 vitweet_LDADD = \
-				../common/libmicro.a \
+				../libgsocial/libgsocial.la \
 				$(GTK_LIBS) \
 				$(WEBKIT_LIBS) \
 				$(LIBOAUTH_LIBS) \

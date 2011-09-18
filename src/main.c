@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include "libmicro.h"
+#include "libgsocial.h"
 #include "tweet-input.h"
 #include "vitweet-request-key-dialog.h"
 #include <webkit/webkit.h>

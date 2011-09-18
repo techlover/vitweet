@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include <libmicro.h>
+#include <libgsocial.h>
 
 void create_request_key_dialog(gchar **keys)
 {

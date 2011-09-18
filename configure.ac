@@ -4,16 +4,17 @@
 AC_PREREQ([2.68])
 AC_INIT([vitweet], [0.01], [gabomagno@gmail.com])
 AM_INIT_AUTOMAKE
+LT_PREREQ([2.4])
+LT_INIT([dlopen])
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_RANLIB
 AM_PROG_CC_C_O
 
-AM_SILENT_RULES
+AM_SILENT_RULES([yes])
 
 # Checks for libraries.
  
@@ -45,7 +46,27 @@ AC_CHECK_FUNCS([strdup])
 
 
 AC_CONFIG_FILES([Makefile
-                 common/Makefile
+                 include/Makefile
+                 libgsocial/Makefile
                  src/Makefile])
 
 AC_OUTPUT
+
+echo \
+"-------------------------------------------------
+
+ ${PACKAGE_NAME} Version ${PACKAGE_VERSION}
+
+ Prefix: '${prefix}'.
+ Compiler: '${CC} ${CFLAGS} ${CPPFLAGS}'
+
+ Package features:
+    Webkit support
+
+ Now type 'make @<:@<target>@:>@'
+   where the optional <target> is:
+     all                - build all binaries
+     install            - install everything
+
+--------------------------------------------------"
+

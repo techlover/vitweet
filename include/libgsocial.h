@@ -1,3 +1,5 @@
+#ifndef LIBGSOCIAL_H_INCLUDED
+#define LIBGSOCIAL_H_INCLUDED
 enum action {
     ACTION_HOME_TIMELINE,
     ACTION_UPDATE,
@@ -32,3 +34,4 @@ int parse_reply_access(char *, char **, char**);
 int send_tweet(char *);
 GList *get_home_timeline(void);
 
+#endif /* LIBGSOCIAL_H_INCLUDED */

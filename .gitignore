@@ -3,6 +3,9 @@ configure
 depcomp
 install-sh
 missing
+config.guess
+config.sub
+ltmain.sh
 *~
 src/keys
 *.swp

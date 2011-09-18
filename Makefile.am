@@ -1,1 +1,1 @@
-SUBDIRS = common src
+SUBDIRS = include libgsocial src
