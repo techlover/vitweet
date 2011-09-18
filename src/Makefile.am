@@ -1,7 +1,8 @@
 bin_PROGRAMS = vitweet
 vitweet_SOURCES = \
-				  main.c \
-				  tweet-input.c tweet-input.h  \
+				  vitweet.c \
+				  vitweet-tweet-input-gtk.c vitweet-tweet-input-gtk.h  \
+				  vitweet-tweet-input.c vitweet-tweet-input.h  \
 				  vitweet-request-key-dialog.c vitweet-request-key-dialog.h
 
 vitweet_CFLAGS =  $(GTK_CFLAGS) \

@@ -3,7 +3,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include "libgsocial.h"
-#include "tweet-input.h"
+#include "vitweet-tweet-input-gtk.h"
 #include "vitweet-request-key-dialog.h"
 #include <webkit/webkit.h>
 
@@ -57,12 +57,12 @@ insert_tweets (GList *tweets, GtkWidget *view)
 
     document = webkit_web_view_get_dom_document (WEBKIT_WEB_VIEW(view));
 
-    Tweet *tweet;
+    GSLTweet *tweet;
     gchar *parsed_tweet;
-    tweet = g_slice_new(Tweet);
+    tweet = g_slice_new(GSLTweet);
     int i;
     for(i = 0; i<g_list_length(tweets); i++){
-        tweet = (Tweet *)g_list_nth_data (tweets, i);
+        tweet = (GSLTweet *)g_list_nth_data (tweets, i);
         body = webkit_dom_document_query_selector (document, "body", NULL);
         div = webkit_dom_document_create_element (document, "div", NULL);
         webkit_dom_node_set_text_content (WEBKIT_DOM_NODE (div),
@@ -80,10 +80,10 @@ insert_tweets (GList *tweets, GtkWidget *view)
 int main(int argc, char *argv[])
 {
     gtk_init(&argc, &argv);
-    micro_init();
-    set_consumer_keys(consu, consu_secret);
+    gsocial_init();
+    gsocial_set_consumer_keys(consu, consu_secret);
     read_keys(&key, &secret);
-    set_access_keys(key, secret);
+    gsocial_set_access_keys(key, secret);
     GtkWidget *window, *treeview, *scrolled_win, *vbox, *tweet_list;
     GtkListStore *store;
     GtkTreeIter iter;
@@ -109,13 +109,13 @@ int main(int argc, char *argv[])
 
     int i;
     GList *list = NULL;
-    list = get_home_timeline();
+    list = gsocial_get_home_timeline();
     //insert_tweets(list, 
-    /*Tweet *tweet;*/
+    /*GSLTweet *tweet;*/
     /*gchar *parsed_tweet;*/
-    /*tweet = g_slice_new(Tweet);*/
+    /*tweet = g_slice_new(GSLTweet);*/
     /*for(i = 0; i<g_list_length(list); i++){*/
-        /*tweet = (Tweet *)g_list_nth_data (list, i);*/
+        /*tweet = (GSLGSLTweet *)g_list_nth_data (list, i);*/
         /*parsed_tweet = g_strconcat("<b>", tweet->screen_name, "</b> ",*/
                                     /*tweet->name, "\n",*/
                                     /*"<small>", tweet->text, "</small>",*/
@@ -195,7 +195,7 @@ static void read_keys(char **key, char **secret)
 
     g_file_get_contents(filename, &content, &bytes, &error);
 
-    if(parse_reply_access(content, key, secret))
+    if(gsocial_parse_reply_access(content, key, secret))
         g_error("Error: Can't read file");
 
     g_free(content);

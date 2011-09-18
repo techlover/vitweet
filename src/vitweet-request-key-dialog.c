@@ -31,7 +31,7 @@ void create_request_key_dialog(gchar **keys)
 
     gtk_label_set_line_wrap(GTK_LABEL (info_request_key), TRUE);
 
-    gchar *url = micro_get_twitter_authorize_url();
+    gchar *url = gsocial_get_twitter_authorize_url();
     
     link = gtk_link_button_new_with_label (url, "Grant Access");
 
@@ -67,7 +67,7 @@ void create_request_key_dialog(gchar **keys)
     result = gtk_dialog_run(GTK_DIALOG (dialog));
     if(result == GTK_RESPONSE_OK) {
         gchar *pin_text = (gchar *)gtk_entry_get_text (GTK_ENTRY (pin_entry)); 
-        *keys = micro_get_access_key_full_reply(pin_text);
+        *keys = gsocial_get_access_key_full_reply(pin_text);
     }
 
     gtk_widget_destroy(dialog);

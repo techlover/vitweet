@@ -11,7 +11,4 @@ typedef struct {
 
 TweetInput *create_tweet_input(void);
 
-static void send_text(GtkWidget *, TweetInput *);
-
-static void update_num_carac(GtkWidget *, GdkEvent *, TweetInput *);
 

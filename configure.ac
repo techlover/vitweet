@@ -6,7 +6,7 @@ AC_INIT([vitweet], [0.01], [gabomagno@gmail.com])
 AM_INIT_AUTOMAKE
 LT_PREREQ([2.4])
 LT_INIT([dlopen])
-AC_CONFIG_SRCDIR([src/main.c])
+AC_CONFIG_SRCDIR([src/vitweet.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -39,6 +39,7 @@ AC_SEARCH_LIBS([oauth_sign_url2], [oauth])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h oauth.h])
+
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.

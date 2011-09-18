@@ -23,25 +23,25 @@ char *req_secret = NULL;
 Session *request;
 GList *tweet_list;
 
-static void request_free(Session *request)
+static void gsocial_request_free(Session *request)
 {
     if(!request)
         return;
     free(request);
 }
 
-void micro_init()
+void gsocial_init()
 {
     request = calloc(1, sizeof(Session));
 }
 
-void set_consumer_keys(char *consumer, char *secret)
+void gsocial_set_consumer_keys(char *consumer, char *secret)
 {
     consumer_key = consumer;
     consumer_secret = secret;
 }
 
-void set_access_keys(char *key, char *secret)
+void gsocial_set_access_keys(char *key, char *secret)
 {
     access_key = key;
     access_secret = secret;
@@ -49,7 +49,7 @@ void set_access_keys(char *key, char *secret)
 
 
 
-int parse_reply_access(char *reply, char **token, char **secret)
+int gsocial_parse_reply_access(char *reply, char **token, char **secret)
 {
     int retval = 1;
     int rc;  /* Number of url parameters */
@@ -81,7 +81,7 @@ int parse_reply_access(char *reply, char **token, char **secret)
     return retval;
 }
 
-char *micro_get_twitter_authorize_url()
+char *gsocial_get_twitter_authorize_url()
 {
     int verifier;
     char line[100];
@@ -97,7 +97,7 @@ char *micro_get_twitter_authorize_url()
 
     reply = oauth_http_get(req_url, NULL);
     //printf("%s\n", reply);
-    if(parse_reply_access(reply, &req_key, &req_secret))
+    if(gsocial_parse_reply_access(reply, &req_key, &req_secret))
         printf("Something is wrong!\n");
 
     free(reply);
@@ -111,7 +111,7 @@ char *micro_get_twitter_authorize_url()
 }
 
 
-char *micro_get_access_key_full_reply(char *pin)
+char *gsocial_get_access_key_full_reply(char *pin)
 {
     int verifier;
     char line[100];
@@ -137,7 +137,7 @@ char *micro_get_access_key_full_reply(char *pin)
 
 
 
-static Tweet *parse_statuses(Session *session,
+static GSLTweet *gsocial_parse_statuses(Session *session,
         xmlDocPtr doc, xmlNodePtr current)
 {
     xmlChar *text = NULL;
@@ -146,7 +146,7 @@ static Tweet *parse_statuses(Session *session,
     xmlChar *created_at = NULL;
     xmlChar *id = NULL;
     xmlNodePtr userinfo;
-    Tweet *tweet = g_slice_new(Tweet);
+    GSLTweet *tweet = g_slice_new(GSLTweet);
     tweet->text = NULL;
     tweet->name = NULL;
     tweet->screen_name = NULL;
@@ -194,12 +194,12 @@ static Tweet *parse_statuses(Session *session,
     return tweet;
 }
 
-static void parse_timeline(char *document, Session *session)
+static void gsocial_parse_timeline(char *document, Session *session)
 {
     xmlDocPtr doc;
     xmlNodePtr current;
     tweet_list = NULL;
-    Tweet *tweet = g_slice_new(Tweet);
+    GSLTweet *tweet = g_slice_new(GSLTweet);
     tweet->text = NULL;
 
     doc = xmlReadMemory(document, strlen(document), "timeline.xml",
@@ -224,8 +224,8 @@ static void parse_timeline(char *document, Session *session)
     while (current != NULL) {
         if ((!xmlStrcmp(current->name, (const xmlChar *)"status"))){
             tweet_list = g_list_append(tweet_list, 
-                    (gpointer*)parse_statuses(session, doc, current));
-            tweet = (Tweet *)g_list_nth_data(tweet_list, 0); 
+                    (gpointer*)gsocial_parse_statuses(session, doc, current));
+            tweet = (GSLTweet *)g_list_nth_data(tweet_list, 0); 
         }
         current = current->next;
     }
@@ -238,7 +238,7 @@ static void parse_timeline(char *document, Session *session)
 }
 
 
-static void send_request(Session *request)
+static void gsocial_send_request(Session *request)
 {
     request->exit_code = 0;
     char *escaped_tweet = NULL;
@@ -275,7 +275,7 @@ static void send_request(Session *request)
 
 
     if (request->action != ACTION_UPDATE)
-        parse_timeline(reply, request);
+        gsocial_parse_timeline(reply, request);
 
     if(reply)
         request->exit_code = 1;
@@ -286,18 +286,18 @@ static void send_request(Session *request)
 }
 
 
-GList *get_home_timeline()
+GList *gsocial_get_home_timeline()
 {
     request->action = ACTION_HOME_TIMELINE;
-    send_request(request);
+    gsocial_send_request(request);
     return tweet_list;
 
 }
 
-int send_tweet(char *tweet)
+int gsocial_send_tweet(char *tweet)
 {   
     request->tweet = tweet;
     request->action = ACTION_UPDATE;
-    send_request(request);
+    gsocial_send_request(request);
     return request->exit_code;
 }

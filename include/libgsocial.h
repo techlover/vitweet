@@ -20,18 +20,19 @@ typedef struct
     gchar *created_at;
     gchar *id;
 
-} Tweet;
+} GSLTweet;
 
+void gsocial_init(void);
 
-char *micro_get_twitter_authorize_url(void);
+char *gsocial_get_twitter_authorize_url(void);
 
-char *micro_get_access_key_full_reply(char *);
+char *gsocial_get_access_key_full_reply(char *);
 
-void set_consumer_keys(char *, char *);
-void set_access_keys(char *, char *);
-void request_token(void);
-int parse_reply_access(char *, char **, char**);
-int send_tweet(char *);
-GList *get_home_timeline(void);
+void gsocial_set_consumer_keys(char *, char *);
+void gsocial_set_access_keys(char *, char *);
+void gsocial_request_token(void);
+int gsocial_parse_reply_access(char *, char **, char**);
+int gsocial_send_tweet(char *);
+GList *gsocial_get_home_timeline(void);
 
 #endif /* LIBGSOCIAL_H_INCLUDED */
