@@ -6,6 +6,7 @@
 #include "vitweet-tweet-input-gtk.h"
 #include "vitweet-request-key-dialog.h"
 #include "vitweet-webkit-tweet-column-gtk.h"
+#include "vitweet-treeview-tweet-column-gtk.h"
 
 #include <glib/gi18n.h>
 
@@ -20,16 +21,6 @@ char *secret = NULL;
 
 TweetInput *tweet_input;
 
-static const guchar CSS[] =
-"body { margin: 0; padding: 0; }\n"
-"div { "
-" -webkit-border-radius: 2px;"
-" background: -webkit-gradient(linear, 0% 100%, 0% 0%,"
-" from(#f1f1f1), to(white));"
-" border: solid 1px #c6c6c6;"
-" -webkit-box-shadow: 0px 0px 2px #c6c6c6;"
-" margin: 12px; padding: 6px;"
-"}";
 
 static void
 setup_tree_view (GtkWidget *treeview)
@@ -58,8 +49,6 @@ int main(int argc, char *argv[])
     read_keys(&key, &secret);
     gsocial_set_access_keys(key, secret);
     GtkWidget *window, *treeview, *scrolled_win, *vbox, *tweet_list;
-    GtkListStore *store;
-    GtkTreeIter iter;
 
     tweet_input = create_tweet_input();
 
@@ -73,58 +62,26 @@ int main(int argc, char *argv[])
     vbox = gtk_vbox_new(FALSE, 5);
 
     gtk_box_pack_start(GTK_BOX(vbox), tweet_input->vbox, FALSE, FALSE, 2);
-    //gtk_container_add (GTK_CONTAINER (window), tweet_input->vbox);
-
-    treeview = gtk_tree_view_new();
-    setup_tree_view(treeview);
-    
-    store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 
     int i;
     GList *list = NULL;
     list = gsocial_get_home_timeline();
-    //insert_tweets(list, 
-    /*GSLTweet *tweet;*/
-    /*gchar *parsed_tweet;*/
-    /*tweet = g_slice_new(GSLTweet);*/
-    /*for(i = 0; i<g_list_length(list); i++){*/
-        /*tweet = (GSLGSLTweet *)g_list_nth_data (list, i);*/
-        /*parsed_tweet = g_strconcat("<b>", tweet->screen_name, "</b> ",*/
-                                    /*tweet->name, "\n",*/
-                                    /*"<small>", tweet->text, "</small>",*/
-                                    /*NULL);*/
-        /*gtk_list_store_append(store, &iter);*/
-        /*gtk_list_store_set(store, &iter, 0, parsed_tweet, -1);*/
-    /*}*/
-
-    gtk_tree_view_set_model (GTK_TREE_VIEW (treeview), GTK_TREE_MODEL (store));
-    g_object_unref(store);
 
     /* Create a webkit based column */
-    tweet_list = create_webkit_column(list);
+    /*tweet_list = create_webkit_column(list);*/
+
+    /* Create a treeview based column */
+    treeview = create_treeview_column(list);
 
     scrolled_win = gtk_scrolled_window_new (NULL, NULL);
 
-    gtk_container_add (GTK_CONTAINER (scrolled_win), tweet_list);
-
+    gtk_container_add (GTK_CONTAINER (scrolled_win), treeview);
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 2);
 
 
     gtk_container_add (GTK_CONTAINER (window), vbox);
 
     gtk_widget_set_size_request (window, 400, 700);
-
-    /*insert_tweets(list, tweet_list);*/
-
-    /*gchar *tmp, *css;*/
-
-    /*tmp = g_base64_encode (CSS, strlen((gchar *) CSS));*/
-    /*css = g_strconcat ("data:text/css;charset=utf-8;base64,",*/
-            /*tmp, NULL);*/
-    /*g_object_set (webkit_web_view_get_settings (WEBKIT_WEB_VIEW (tweet_list)),*/
-            /*"user-stylesheet-uri", css, NULL);*/
-    /*g_free (css);*/
-    /*g_free (tmp);*/
 
 
     gtk_widget_show_all(window);

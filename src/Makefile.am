@@ -9,8 +9,9 @@ vitweet_SOURCES = \
 				  vitweet-request-key-dialog.c \
 				  vitweet-request-key-dialog.h \
 				  vitweet-webkit-tweet-column-gtk.c \
-				  vitweet-webkit-tweet-column-gtk.h
-
+				  vitweet-webkit-tweet-column-gtk.h \
+				  vitweet-treeview-tweet-column-gtk.c \
+				  vitweet-treeview-tweet-column-gtk.h
 
 vitweet_CFLAGS =  $(GTK_CFLAGS) \
 				  $(WEBKIT_CFLAGS) 

@@ -10,9 +10,9 @@ TweetInput
     tweet_input->tweet_text = gtk_text_view_new();
 
     gtk_text_view_set_editable(GTK_TEXT_VIEW (tweet_input->tweet_text), TRUE);
-    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tweet_input->tweet_text), GTK_WRAP_WORD);
+    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tweet_input->tweet_text),
+            GTK_WRAP_WORD_CHAR);
     
-    gtk_widget_set_size_request(tweet_input->tweet_text, 200, 200);
 
     tweet_input->scrolled_win = gtk_scrolled_window_new(NULL, NULL);
 
@@ -49,7 +49,10 @@ TweetInput
             G_CALLBACK (send_text), (gpointer)tweet_input);
 
     
-    gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->scrolled_win, TRUE, TRUE, 2);
+    gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->scrolled_win, 
+            FALSE, FALSE, 2);
+
+    gtk_widget_set_size_request(tweet_input->scrolled_win, 200, 100);
     gtk_box_pack_start (GTK_BOX (tweet_input->vbox), tweet_input->bottom_hbox, FALSE, FALSE, 2);
 
 
