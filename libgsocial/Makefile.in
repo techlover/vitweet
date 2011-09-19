@@ -233,7 +233,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libgsocial.la
-libgsocial_la_SOURCES = libgsocial.h libgsocial.c
+libgsocial_la_SOURCES = libgsocial.c
 libgsocial_la_CPPFLAGS = -I$(top_srcdir)/include
 libgsocial_la_CFLAGS = \
 					 $(GLIB_CFLAGS) \

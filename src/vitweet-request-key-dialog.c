@@ -59,13 +59,13 @@ void create_request_key_dialog(gchar **keys)
     //gtk_box_pack_start(GTK_BOX (GTK_DIALOG (dialog)->vbox), table, FALSE, FALSE, 5);
 
 
-
     gtk_widget_set_size_request(dialog, 500, 300);
     gtk_window_set_resizable(GTK_WINDOW(dialog), FALSE);
     gtk_widget_show_all(dialog);
 
     result = gtk_dialog_run(GTK_DIALOG (dialog));
     if(result == GTK_RESPONSE_OK) {
+        /* TODO Validate this! */
         gchar *pin_text = (gchar *)gtk_entry_get_text (GTK_ENTRY (pin_entry)); 
         *keys = gsocial_get_access_key_full_reply(pin_text);
     }

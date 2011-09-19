@@ -6,6 +6,8 @@ missing
 config.guess
 config.sub
 ltmain.sh
+aclocal.m4
+config.h.in
 *~
 src/keys
 *.swp
