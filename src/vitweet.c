@@ -7,12 +7,7 @@
 #include "vitweet-request-key-dialog.h"
 #include "vitweet-webkit-tweet-column-gtk.h"
 #include "vitweet-treeview-tweet-column-gtk.h"
-
 #include <glib/gi18n.h>
-
-
-static void destroy (GtkWidget*,gpointer);
-static void read_keys(char **, char **);
 
 char consu[] = "zoCegrqiH5zv7dBJoLNw";
 char consu_secret[] = "e9xprZdGKksRiQtVcSrsS9RnlOZenBGkptUApmjxs";
@@ -22,24 +17,48 @@ char *secret = NULL;
 TweetInput *tweet_input;
 
 
-static void
-setup_tree_view (GtkWidget *treeview)
+static void read_keys(char **key, char **secret)
 {
-    GtkCellRenderer *renderer;
-    GtkTreeViewColumn *column;
-    
-    renderer = gtk_cell_renderer_text_new();
+    gchar *filename, *content;
+    gchar *path;
+    gsize bytes;
 
-    g_object_set(G_OBJECT (renderer), "wrap-width", 370, NULL);
+    GError *error = NULL;
 
-    g_object_set(G_OBJECT (renderer), "wrap-mode", PANGO_WRAP_WORD_CHAR, NULL);
+    filename = g_build_filename (g_get_current_dir(), "keys", NULL);
 
-    column = gtk_tree_view_column_new_with_attributes(
-           "Home Time Line", renderer, "markup", 0, NULL);
+    content = NULL;
 
-    gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
+    if(!g_file_test (filename, G_FILE_TEST_EXISTS)) {
+        path = g_build_path ("/", g_get_home_dir(), ".vitweet", NULL);
+        filename = g_build_filename (path, "keys", NULL);
+    }
+    if(!g_file_test (filename, G_FILE_TEST_EXISTS)) {
+        create_request_key_dialog(&content);
+        g_mkdir(path, 0700);
+        if(content)
+            g_file_set_contents(filename, content, strlen(content), &error);
+        else
+            g_error("PIN not entered");
+    }
+
+
+    g_file_get_contents(filename, &content, &bytes, &error);
+
+    if(gsocial_parse_reply_access(content, key, secret))
+        g_error("Error: Can't read file");
+
+    g_free(content);
+    g_free(filename);
+    g_free(path);
 }
 
+
+static void destroy(GtkWidget *window, gpointer data)
+{
+    g_slice_free(TweetInput, tweet_input);
+    gtk_main_quit();
+}
 
 int main(int argc, char *argv[])
 {
@@ -90,45 +109,3 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
-static void read_keys(char **key, char **secret)
-{
-    gchar *filename, *content;
-    gchar *path;
-    gsize bytes;
-
-    GError *error = NULL;
-
-    filename = g_build_filename (g_get_current_dir(), "keys", NULL);
-
-    content = NULL;
-
-    if(!g_file_test (filename, G_FILE_TEST_EXISTS)) {
-        path = g_build_path ("/", g_get_home_dir(), ".vitweet", NULL);
-        filename = g_build_filename (path, "keys", NULL);
-    }
-    if(!g_file_test (filename, G_FILE_TEST_EXISTS)) {
-        create_request_key_dialog(&content);
-        g_mkdir(path, 0700);
-        if(content)
-            g_file_set_contents(filename, content, strlen(content), &error);
-        else
-            g_error("PIN not entered");
-    }
-
-
-    g_file_get_contents(filename, &content, &bytes, &error);
-
-    if(gsocial_parse_reply_access(content, key, secret))
-        g_error("Error: Can't read file");
-
-    g_free(content);
-    g_free(filename);
-}
-
-
-static void destroy(GtkWidget *window, gpointer data)
-{
-    g_slice_free(TweetInput, tweet_input);
-    gtk_main_quit();
-}
