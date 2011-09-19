@@ -5,7 +5,7 @@
 #include "libgsocial.h"
 #include "vitweet-tweet-input-gtk.h"
 #include "vitweet-request-key-dialog.h"
-#include <webkit/webkit.h>
+#include "vitweet-webkit-tweet-column-gtk.h"
 
 #include <glib/gi18n.h>
 
@@ -47,33 +47,6 @@ setup_tree_view (GtkWidget *treeview)
            "Home Time Line", renderer, "markup", 0, NULL);
 
     gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
-}
-
-static void
-insert_tweets (GList *tweets, GtkWidget *view)
-{
-    WebKitDOMDocument *document;
-    WebKitDOMElement *body, *div;
-
-    document = webkit_web_view_get_dom_document (WEBKIT_WEB_VIEW(view));
-
-    GSLTweet *tweet;
-    gchar *parsed_tweet;
-    tweet = g_slice_new(GSLTweet);
-    int i;
-    for(i = 0; i<g_list_length(tweets); i++){
-        tweet = (GSLTweet *)g_list_nth_data (tweets, i);
-        body = webkit_dom_document_query_selector (document, "body", NULL);
-        div = webkit_dom_document_create_element (document, "div", NULL);
-        webkit_dom_node_set_text_content (WEBKIT_DOM_NODE (div),
-                                          tweet->text,
-                                         NULL);
-        webkit_dom_node_append_child (WEBKIT_DOM_NODE (body),
-                                        WEBKIT_DOM_NODE (div),
-                                        NULL);
-    }
-
-
 }
 
 
@@ -127,14 +100,8 @@ int main(int argc, char *argv[])
     gtk_tree_view_set_model (GTK_TREE_VIEW (treeview), GTK_TREE_MODEL (store));
     g_object_unref(store);
 
-    tweet_list = webkit_web_view_new();
-
-    webkit_web_view_load_string (WEBKIT_WEB_VIEW (tweet_list),
-                                 "<html><body></body><html>",
-                                 "text/html>",
-                                 "UTF-8",
-                                 NULL);
-
+    /* Create a webkit based column */
+    tweet_list = create_webkit_column(list);
 
     scrolled_win = gtk_scrolled_window_new (NULL, NULL);
 
@@ -147,17 +114,17 @@ int main(int argc, char *argv[])
 
     gtk_widget_set_size_request (window, 400, 700);
 
-    insert_tweets(list, tweet_list);
+    /*insert_tweets(list, tweet_list);*/
 
-    gchar *tmp, *css;
+    /*gchar *tmp, *css;*/
 
-    tmp = g_base64_encode (CSS, strlen((gchar *) CSS));
-    css = g_strconcat ("data:text/css;charset=utf-8;base64,",
-            tmp, NULL);
-    g_object_set (webkit_web_view_get_settings (WEBKIT_WEB_VIEW (tweet_list)),
-            "user-stylesheet-uri", css, NULL);
-    g_free (css);
-    g_free (tmp);
+    /*tmp = g_base64_encode (CSS, strlen((gchar *) CSS));*/
+    /*css = g_strconcat ("data:text/css;charset=utf-8;base64,",*/
+            /*tmp, NULL);*/
+    /*g_object_set (webkit_web_view_get_settings (WEBKIT_WEB_VIEW (tweet_list)),*/
+            /*"user-stylesheet-uri", css, NULL);*/
+    /*g_free (css);*/
+    /*g_free (tmp);*/
 
 
     gtk_widget_show_all(window);

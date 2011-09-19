@@ -50,7 +50,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_vitweet_OBJECTS = vitweet-vitweet.$(OBJEXT) \
 	vitweet-vitweet-tweet-input-gtk.$(OBJEXT) \
 	vitweet-vitweet-tweet-input.$(OBJEXT) \
-	vitweet-vitweet-request-key-dialog.$(OBJEXT)
+	vitweet-vitweet-request-key-dialog.$(OBJEXT) \
+	vitweet-vitweet-webkit-tweet-column-gtk.$(OBJEXT)
 vitweet_OBJECTS = $(am_vitweet_OBJECTS)
 am__DEPENDENCIES_1 =
 vitweet_DEPENDENCIES = ../libgsocial/libgsocial.la \
@@ -220,9 +221,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 vitweet_SOURCES = \
 				  vitweet.c \
-				  vitweet-tweet-input-gtk.c vitweet-tweet-input-gtk.h  \
-				  vitweet-tweet-input.c vitweet-tweet-input.h  \
-				  vitweet-request-key-dialog.c vitweet-request-key-dialog.h
+				  vitweet-tweet-input-gtk.c \
+				  vitweet-tweet-input-gtk.h  \
+				  vitweet-tweet-input.c \
+				  vitweet-tweet-input.h  \
+				  vitweet-request-key-dialog.c \
+				  vitweet-request-key-dialog.h \
+				  vitweet-webkit-tweet-column-gtk.c \
+				  vitweet-webkit-tweet-column-gtk.h
 
 vitweet_CFLAGS = $(GTK_CFLAGS) \
 				  $(WEBKIT_CFLAGS) 
@@ -325,6 +331,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-vitweet-request-key-dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-vitweet-tweet-input-gtk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-vitweet-tweet-input.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vitweet-vitweet.Po@am__quote@
 
 .c.o:
@@ -414,6 +421,22 @@ vitweet-vitweet-request-key-dialog.obj: vitweet-request-key-dialog.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='vitweet-request-key-dialog.c' object='vitweet-vitweet-request-key-dialog.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -c -o vitweet-vitweet-request-key-dialog.obj `if test -f 'vitweet-request-key-dialog.c'; then $(CYGPATH_W) 'vitweet-request-key-dialog.c'; else $(CYGPATH_W) '$(srcdir)/vitweet-request-key-dialog.c'; fi`
+
+vitweet-vitweet-webkit-tweet-column-gtk.o: vitweet-webkit-tweet-column-gtk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -MT vitweet-vitweet-webkit-tweet-column-gtk.o -MD -MP -MF $(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Tpo -c -o vitweet-vitweet-webkit-tweet-column-gtk.o `test -f 'vitweet-webkit-tweet-column-gtk.c' || echo '$(srcdir)/'`vitweet-webkit-tweet-column-gtk.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Tpo $(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='vitweet-webkit-tweet-column-gtk.c' object='vitweet-vitweet-webkit-tweet-column-gtk.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -c -o vitweet-vitweet-webkit-tweet-column-gtk.o `test -f 'vitweet-webkit-tweet-column-gtk.c' || echo '$(srcdir)/'`vitweet-webkit-tweet-column-gtk.c
+
+vitweet-vitweet-webkit-tweet-column-gtk.obj: vitweet-webkit-tweet-column-gtk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -MT vitweet-vitweet-webkit-tweet-column-gtk.obj -MD -MP -MF $(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Tpo -c -o vitweet-vitweet-webkit-tweet-column-gtk.obj `if test -f 'vitweet-webkit-tweet-column-gtk.c'; then $(CYGPATH_W) 'vitweet-webkit-tweet-column-gtk.c'; else $(CYGPATH_W) '$(srcdir)/vitweet-webkit-tweet-column-gtk.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Tpo $(DEPDIR)/vitweet-vitweet-webkit-tweet-column-gtk.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='vitweet-webkit-tweet-column-gtk.c' object='vitweet-vitweet-webkit-tweet-column-gtk.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(vitweet_CPPFLAGS) $(CPPFLAGS) $(vitweet_CFLAGS) $(CFLAGS) -c -o vitweet-vitweet-webkit-tweet-column-gtk.obj `if test -f 'vitweet-webkit-tweet-column-gtk.c'; then $(CYGPATH_W) 'vitweet-webkit-tweet-column-gtk.c'; else $(CYGPATH_W) '$(srcdir)/vitweet-webkit-tweet-column-gtk.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
