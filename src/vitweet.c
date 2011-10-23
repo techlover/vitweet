@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
 
     int i;
     GList *list = NULL;
-    list = gsocial_get_home_timeline();
+    list = gsocial_get_home_timeline(NULL);
+    
 
     /* Create a webkit based column */
     /*tweet_list = create_webkit_column(list);*/

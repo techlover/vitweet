@@ -36,6 +36,7 @@ insert_tweets (GList *tweets, GtkWidget *view)
         webkit_dom_node_set_text_content (WEBKIT_DOM_NODE (div),
                 tweet->text,
                 NULL);
+        /*printf ( "%s\n", tweet->text );*/
         webkit_dom_node_append_child (WEBKIT_DOM_NODE (body),
                 WEBKIT_DOM_NODE (div),
                 NULL);

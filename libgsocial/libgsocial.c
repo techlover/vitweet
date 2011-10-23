@@ -1,3 +1,21 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  libgsocial.c
+ *
+ *    Description:  Library that connects that retrieves the information
+ *                  from the social networks. 
+ *
+ *        Version:  1.0
+ *        Created:  10/22/2011 06:31:24 PM
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Gabriel Chavez (), gabrielchavez02@gmail.com
+ *        Company:  
+ *
+ * =====================================================================================
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -12,16 +30,20 @@ const char twitter_statuses[] = "http://api.twitter.com/1/statuses";
 const char request_token_uri[] = "https://api.twitter.com/oauth/request_token";
 const char access_token[] = "https://api.twitter.com/oauth/access_token";
 const char twitter_authorize_uri[] = "http://api.twitter.com/oauth/authorize?oauth_token=";
+const char twitter_dm_uri[] = "http://api.twitter.com/1/direct_messages.xml";
 
-char *consumer_key = NULL;
-char *consumer_secret = NULL;
-char *access_key = NULL;
-char *access_secret = NULL;
+static char *consumer_key = NULL;
+static char *consumer_secret = NULL;
+static char *access_key = NULL;
+static char *access_secret = NULL;
 // Temporal keys
 char *req_key = NULL;
 char *req_secret = NULL;
 Session *request;
 GList *tweet_list;
+
+static gchar *last_tw_id = "0";
+static gchar *last_dm_id = "0";
 
 static void gsocial_request_free(Session *request)
 {
@@ -138,7 +160,7 @@ char *gsocial_get_access_key_full_reply(char *pin)
 
 
 static GSLTweet *gsocial_parse_statuses(Session *session,
-        xmlDocPtr doc, xmlNodePtr current)
+        xmlDocPtr doc, xmlNodePtr current, enum action ACTION)
 {
     xmlChar *text = NULL;
     xmlChar *screen_name = NULL;
@@ -152,17 +174,43 @@ static GSLTweet *gsocial_parse_statuses(Session *session,
     tweet->screen_name = NULL;
     tweet->id = NULL;
     tweet->created_at = NULL;
+    const xmlChar *author = NULL;
+    
+    switch(ACTION){
+        case ACTION_HOME_TIMELINE:
+            author = "user"; 
+            break;
+        case ACTION_MESSAGES:
+            author = "sender";
+            break;
+    }
 
     current = current->xmlChildrenNode;
     while (current != NULL) {
         if (current->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(current->name, (const xmlChar *)"created_at"))
+            if (!xmlStrcmp(current->name, (const xmlChar *)"created_at")) {
                 created_at = xmlNodeListGetString(doc, current->xmlChildrenNode, 1);
-            if (!xmlStrcmp(current->name, (const xmlChar *)"text"))
+            }
+            if (!xmlStrcmp(current->name, (const xmlChar *)"text")) {
                 text = xmlNodeListGetString(doc, current->xmlChildrenNode, 1);
-            if (!xmlStrcmp(current->name, (const xmlChar *)"id"))
+            }
+            if (!xmlStrcmp(current->name, (const xmlChar *)"id")) {
                 id = xmlNodeListGetString(doc, current->xmlChildrenNode, 1);
-            if (!xmlStrcmp(current->name, (const xmlChar *)"user")) {
+                switch(ACTION){ 
+                    case ACTION_HOME_TIMELINE:
+                        if(atoi(last_tw_id) < atoi((gchar *) id))
+                            last_tw_id = (gchar *) id;
+                        break;
+                    case ACTION_MESSAGES:
+                        printf ( "%s\n", id );
+                        if(atoi(last_dm_id) < atoi((gchar *) id))
+                            last_dm_id = (gchar *) id;
+                        break;
+
+                }
+
+            }
+            if (!xmlStrcmp(current->name, author)) {
                 userinfo = current->xmlChildrenNode;
                 while (userinfo != NULL) {
                     if ((!xmlStrcmp(userinfo->name, (const xmlChar *)"screen_name"))) {
@@ -194,13 +242,16 @@ static GSLTweet *gsocial_parse_statuses(Session *session,
     return tweet;
 }
 
-static void gsocial_parse_timeline(char *document, Session *session)
+static void gsocial_parse(char *document, Session *session, enum action ACTION)
 {
     xmlDocPtr doc;
     xmlNodePtr current;
     tweet_list = NULL;
     GSLTweet *tweet = g_slice_new(GSLTweet);
     tweet->text = NULL;
+    const xmlChar *doc_type = NULL;
+    const xmlChar *text_type = NULL;
+
 
     doc = xmlReadMemory(document, strlen(document), "timeline.xml",
             NULL, XML_PARSE_NOERROR);
@@ -214,17 +265,29 @@ static void gsocial_parse_timeline(char *document, Session *session)
         return;
     }
 
-    if (xmlStrcmp(current->name, (const xmlChar *) "statuses")) {
+    switch(ACTION) {
+        case ACTION_HOME_TIMELINE:
+            doc_type = "statuses";
+            text_type = "status";
+            break;
+        case ACTION_MESSAGES:
+            doc_type = "direct-messages";
+            text_type = "direct_message";
+            break;
+    }
+
+    if (xmlStrcmp(current->name, doc_type)){
         fprintf(stderr, "unexpected document type\n");
         xmlFreeDoc(doc);
         return;
     }
 
+
     current = current->xmlChildrenNode;
     while (current != NULL) {
-        if ((!xmlStrcmp(current->name, (const xmlChar *)"status"))){
+        if (!xmlStrcmp(current->name, text_type)) {
             tweet_list = g_list_append(tweet_list, 
-                    (gpointer*)gsocial_parse_statuses(session, doc, current));
+                    (gpointer*)gsocial_parse_statuses(session, doc, current, ACTION));
             tweet = (GSLTweet *)g_list_nth_data(tweet_list, 0); 
         }
         current = current->next;
@@ -249,14 +312,28 @@ static void gsocial_send_request(Session *request)
     char *postarg = NULL;
     switch(request->action) {
         case ACTION_HOME_TIMELINE:
-            sprintf(endpoint, "%s%s","http://api.twitter.com/1/statuses",
-                    "/home_timeline.xml");
+            if(request->since_id != NULL) {
+                sprintf(endpoint, "%s%s?%s%s", twitter_statuses, "/home_timeline.xml", 
+                        "since_id=", request->since_id);
+                printf ( "%s\n", request->since_id );
+            }
+            else {
+                sprintf(endpoint, "%s%s", twitter_statuses, "/home_timeline.xml");
+            }
             break;
         case ACTION_UPDATE:
             escaped_tweet = oauth_url_escape(request->tweet);
             sprintf(endpoint, "%s%s?status=%s","http://api.twitter.com/1/statuses",
                     "/update.xml", escaped_tweet);
             is_post = 1;
+            break;
+        case ACTION_MESSAGES:
+            if(request->since_id != NULL) {
+                sprintf(endpoint, "%s?%s%s", twitter_dm_uri, "since_id=", request->since_id);
+            }
+            else {
+                sprintf(endpoint, "%s", twitter_dm_uri);
+            }
             break;
 
     }
@@ -275,7 +352,7 @@ static void gsocial_send_request(Session *request)
 
 
     if (request->action != ACTION_UPDATE)
-        gsocial_parse_timeline(reply, request);
+        gsocial_parse(reply, request, request->action);
 
     if(reply)
         request->exit_code = 1;
@@ -286,9 +363,10 @@ static void gsocial_send_request(Session *request)
 }
 
 
-GList *gsocial_get_home_timeline()
+GList *gsocial_get_home_timeline(char *since_id)
 {
     request->action = ACTION_HOME_TIMELINE;
+    request->since_id = since_id;
     gsocial_send_request(request);
     return tweet_list;
 
@@ -300,4 +378,30 @@ int gsocial_send_tweet(char *tweet)
     request->action = ACTION_UPDATE;
     gsocial_send_request(request);
     return request->exit_code;
+}
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  gsocial_get_direct_messages
+ *  Description:  This functions retrieves the direct messages from the user
+ * =====================================================================================
+ */
+GList *gsocial_get_direct_messages(char *since_id)
+{
+    request->action = ACTION_MESSAGES;
+    request->since_id = since_id;
+    gsocial_send_request(request);
+    return tweet_list;
+
+}
+
+gchar *gsocial_get_tw_last_id()
+{
+    return last_tw_id;
+}
+
+gchar *gsocial_get_dm_last_id()
+{
+    return last_dm_id;
 }
